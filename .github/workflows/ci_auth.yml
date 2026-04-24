@@ -95,7 +95,7 @@ jobs:
         with:
           projectBaseDir: ms-auth/authentification
           args: >
-            -Dsonar.projectKey=lee-rudy_ec03_urbanhub
+            -Dsonar.projectKey=EC03_UrbanHub
             -Dsonar.organization=lee-rudy
             -Dsonar.sources=src
             -Dsonar.tests=tests
