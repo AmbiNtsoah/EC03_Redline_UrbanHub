@@ -3,8 +3,7 @@ version: "3.9"
 services:
 
   ms-auth:
-    image: ghcr.io/lee-rudy/ec03_urbanhub/ms-auth:latest
-    container_name: ms-auth
+    image: ghcr.io/ambintsoah/EC03_Redline_UrbanHub/ms-auth:latest
     ports:
       - "8000:8000"
     env_file:
@@ -13,18 +12,16 @@ services:
       - urbanhub-net
 
   ms-user:
-    image: ghcr.io/lee-rudy/ec03_urbanhub/ms-user:latest
-    container_name: ms-user
+    image: ghcr.io/ambintsoah/EC03_Redline_UrbanHub/ms-user:latest
     ports:
-      - "8002:8000"
+      - "8001:8000"
     env_file:
       - ms-user/.env
     networks:
       - urbanhub-net
 
   ms-collecte-iot:
-    image: ghcr.io/lee-rudy/ec03_urbanhub/ms-collecte-iot:latest
-    container_name: ms-collecte-iot
+    image: ghcr.io/ambintsoah/EC03_Redline_UrbanHub/ms-collecte-iot:latest
     ports:
       - "8002:8000"
     env_file:
@@ -35,8 +32,7 @@ services:
       - urbanhub-net
 
   ms-analyse-trafic:
-    image: ghcr.io/lee-rudy/ec03_urbanhub/ms-analyse-trafic:latest
-    container_name: ms-analyse-trafic
+    image: ghcr.io/ambintsoah/EC03_Redline_UrbanHub/ms-analyse-trafic:latest
     ports:
       - "8003:8000"
     env_file:
@@ -45,8 +41,7 @@ services:
       - urbanhub-net
 
   ms-alerte:
-    image: ghcr.io/lee-rudy/ec03_urbanhub/ms-alerte:latest
-    container_name: ms-alerte
+    image: ghcr.io/ambintsoah/EC03_Redline_UrbanHub/ms-alerte:latest
     ports:
       - "8004:8000"
     env_file:
@@ -54,9 +49,17 @@ services:
     networks:
       - urbanhub-net
 
+  ms_validateur_capteur:
+    image: ghcr.io/ambintsoah/EC03_Redline_UrbanHub/ms-alerte:latest
+    ports:
+      - "8006:8000"
+    env_file:
+      - ms_validateur_capteur/.env
+    networks:
+      - urbanhub-net
+
   mqtt-broker:
     image: eclipse-mosquitto:2.0
-    container_name: mqtt-broker
     ports:
       - "1883:1883"
     networks:
