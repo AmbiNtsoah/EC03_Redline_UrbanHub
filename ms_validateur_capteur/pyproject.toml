@@ -12,7 +12,8 @@ dependencies = [
     "pytest (>=9.0.3,<10.0.0)",
     "flake8 (>=7.3.0,<8.0.0)",
     "asyncpg (>=0.31.0,<0.32.0)",
-    "psycopg-binary (>=3.3.3,<4.0.0)"
+    "psycopg-binary (>=3.3.3,<4.0.0)",
+    "pytest-cov (>=7.1.0,<8.0.0)"
 ]
 
 [tool.poetry]
@@ -21,3 +22,10 @@ packages = [{include = "ms_validateur_capteur", from = "src"}]
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "pytest (>=9.0.3,<10.0.0)",
+    "pytest-cov (>=7.1.0,<8.0.0)",
+    "httpx (>=0.28.1,<0.29.0)"
+]
