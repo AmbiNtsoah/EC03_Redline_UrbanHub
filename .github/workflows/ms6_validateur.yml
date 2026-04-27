@@ -6,7 +6,7 @@ on:
       - main
       - develop
     paths:
-      - 'ms_validateur_capteur/**'
+      - 'ms_validateur_capteur/'
       - '.github/workflows/ci_validateur.yml'
 
   pull_request:
