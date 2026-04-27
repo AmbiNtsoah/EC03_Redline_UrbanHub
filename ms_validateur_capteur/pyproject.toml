@@ -1,0 +1,23 @@
+[project]
+name = "ms-validateur-capteur"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "AmbiNtsoah",email = "ambinints04@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi[standard] (>=0.136.1,<0.137.0)",
+    "pytest (>=9.0.3,<10.0.0)",
+    "flake8 (>=7.3.0,<8.0.0)",
+    "asyncpg (>=0.31.0,<0.32.0)",
+    "psycopg-binary (>=3.3.3,<4.0.0)"
+]
+
+[tool.poetry]
+packages = [{include = "ms_validateur_capteur", from = "src"}]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
