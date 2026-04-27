@@ -1,4 +1,4 @@
-name: CI Validateur Capteur
+name: MS6 - Validateur de donnees capteur
 
 on:
   push:

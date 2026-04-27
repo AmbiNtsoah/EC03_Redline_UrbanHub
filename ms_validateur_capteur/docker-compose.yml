@@ -1,0 +1,29 @@
+services:
+  user_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ms_validateur_capteur
+    ports:
+      - "8006:8006"
+    volumes:
+      - .:/app
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@database:5432/validateur_db
+    depends_on:
+      - database
+
+  database:
+    image: postgres:16
+    container_name: ms_validateur_db
+    environment:
+      POSTGRES_DB: validateur_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5434"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
