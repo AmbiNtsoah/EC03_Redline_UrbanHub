@@ -6,15 +6,20 @@ on:
       - main
       - develop
     paths:
-      - ms_validateur_capteur/**
+      - 'ms_validateur_capteur/**'
+      - '.github/workflows/ci_validateur.yml'
+
   pull_request:
     branches:
       - main
-    types: [opened, synchronize, reopened]
+      - develop
+    paths:
+      - 'ms_validateur_capteur/**'
+      - '.github/workflows/ci_validateur.yml'
 
 jobs:
   test:
-    name: Tests Python
+    name: Tests
     runs-on: ubuntu-latest
 
     defaults:
@@ -22,22 +27,26 @@ jobs:
         working-directory: ms_validateur_capteur
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.11"
 
       - name: Install Poetry
-        run: pip install poetry
+        run: pip install "poetry==2.3.2"
+
+      - name: Sync lock file with pyproject
+        run: poetry lock
 
       - name: Install dependencies
-        run: poetry install --no-interaction --no-root
+        run: poetry install --no-interaction
 
       - name: Run tests
-        run: poetry run pytest --maxfail=1 --disable-warnings -q
+        env:
+          PYTHONPATH: .
+        run: poetry run pytest -q
 
   quality:
     name: Code Quality
@@ -49,39 +58,56 @@ jobs:
         working-directory: ms_validateur_capteur
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.11"
 
       - name: Install Poetry
-        run: pip install poetry
+        run: pip install "poetry==2.3.2"
+
+      - name: Sync lock file with pyproject
+        run: poetry lock
 
       - name: Install dependencies
-        run: poetry install --no-interaction --no-root
+        run: poetry install --no-interaction
 
-      - name: Install tools
-        run: |
-          poetry add --group dev flake8
-          npm install -g snyk
+      - name: Run flake8
+        run: poetry run flake8 . --max-line-length=120 --extend-ignore=W292,W391
 
-      - name: Flake8 (lint)
-        run: poetry run flake8 .
-
-      - name: Snyk scan
-        run: snyk test
+      - name: Run tests with coverage XML
         env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          PYTHONPATH: .
+        run: |
+          mkdir -p reports
+          poetry run pytest -q \
+            --cov=. \
+            --cov-report=xml:reports/coverage.xml
 
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v2
+        uses: SonarSource/sonarcloud-github-action@v3
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: ms_validateur_capteur
+          args: >
+            -Dsonar.projectKey=AmbiNtsoah_EC03_Redline_UrbanHub
+            -Dsonar.organization=ambintsoah
+            -Dsonar.sources=src
+            -Dsonar.tests=tests
+            -Dsonar.python.version=3.11
+            -Dsonar.python.coverage.reportPaths=reports/coverage.xml
+            -Dsonar.sourceEncoding=UTF-8
+
+      - name: Install Snyk
+        run: npm install -g snyk
+
+      - name: Authenticate Snyk
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
 
   build:
     name: Build Docker Image
@@ -89,12 +115,10 @@ jobs:
     needs: quality
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Build Docker image
-        run: |
-          docker build -t validateur-capteur:latest ./ms_validateur_capteur
+        run: docker build -t validateur-capteur:latest ./ms_validateur_capteur
 
   deploy-staging:
     name: Deploy to Staging
